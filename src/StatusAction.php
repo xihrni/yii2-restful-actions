@@ -26,7 +26,7 @@ class StatusAction extends Action
     public function run($id)
     {
         if (null === Yii::$app->request->post('status')) {
-            throw new HttpException(400, Yii::t('app/error', 'Parameter error.'));
+            throw new HttpException(400, static::t('error', 'Parameter error.'));
         }
 
         /* @var $model ActiveRecord */

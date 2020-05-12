@@ -39,11 +39,14 @@ class Action extends \yii\base\Action
      */
     public function init()
     {
+        // 注册翻译
+        $this->_registerTranslations();
+
         if ($this->modelClass === null) {
-            throw new InvalidConfigException(get_class($this) . '::$modelClass must be set.');
+            throw new InvalidConfigException(static::t('error', '{param} must be set.', [
+                'param' => get_class($this) . '::$modelClass'
+            ]));
         }
-
-
     }
 
     /**
@@ -69,7 +72,7 @@ class Action extends \yii\base\Action
                 $where['status'] = $status;
                 $model = $modelClass::findOne($where);
             } else {
-                throw new HttpException(500, Yii::t('app/error', 'The number of keys and values is inconsistent.'));
+                throw new HttpException(500, static::t('error', 'The number of keys and values is inconsistent.'));
             }
         } else if ($id !== null) {
             $where = ['id' => $id, 'is_trash' => 0];
@@ -81,37 +84,41 @@ class Action extends \yii\base\Action
             return $model;
         }
 
-        throw new NotFoundHttpException(Yii::t('app/error', 'Object not found: {id}.', ['id' => $id]));
+        throw new NotFoundHttpException(static::t('error', 'Object not found: {id}.', ['id' => $id]));
     }
 
 
     /* ----private---- */
 
     /**
-     * 设置翻译
+     * 将消息转换为指定的语言
+     *
+     * @param  string $category 消息分类
+     * @param  string $message  消息内容
+     * @param  array  $params   将用于替换消息中相应占位符的参数
+     * @param  string $language 语言代码（例如 en-US、en ）
+     * @return string
+     */
+    protected static function t($category, $message, $params = [], $language = null)
+    {
+        return Yii::t('xihrni/yii2/restful/actions/' . $category, $message, $params, $language);
+    }
+
+    /**
+     * 注册翻译
      *
      * @private
      * @return void
      */
-    private function _setTranslations()
+    private function _registerTranslations()
     {
-        $translations = Yii::$app->i18n->translations;
-
-        if (isset($translations['app*']['fileMap']['app/error'])) {
-            $messages = $translations['app*']['fileMap']['app/error'];
-            $messages = array_merge($messages, [
-                'Parameter error.' => '参数错误。',
-                'Object not found: {id}.' => '没有找到对象：{id}。',
-                'The number of keys and values is inconsistent.' => '键与值的数量不一致。',
-            ]);
-        } else {
-            $translations['app*'] = [
-                'class'   => 'yii\i18n\PhpMessageSource',
-                'fileMap' => [
-                    'app' => 'app.php',
-                    'app/error' => 'error.php',
-                ],
-            ];
-        }
+        Yii::$app->i18n->translations['xihrni/yii2/restful/actions/*'] = [
+            'class' => 'yii\i18n\PhpMessageSource',
+            'sourceLanguage' => 'en-US',
+            'basePath' => '@vendor/xihrni/yii2-restful-actions/src/messages',
+            'fileMap' => [
+                'xihrni/yii2/restful/actions/error' => 'error.php',
+            ],
+        ];
     }
 }
