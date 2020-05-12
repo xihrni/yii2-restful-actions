@@ -1,0 +1,22 @@
+{
+    "name": "xihrni/yii2-restful-actions",
+    "description": "Restful style framework operation class based on Yii2.",
+    "keywords": ["yii2", "restful", "action"],
+    "type": "yii2-extension",
+    "license": "BSD-3-Clause",
+    "require": {
+        "php": ">=7",
+        "yiisoft/yii2": "*"
+    },
+    "authors": [
+        {
+            "name": "xihrni",
+            "email": "xihrni@126.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "xihrni\\yii2\\restful\\actions\\": "src/"
+        }
+    }
+}
