@@ -25,6 +25,18 @@ class CreateAction extends Action
      */
     public $isLocation = false;
 
+    /**
+     * @var callable $processing 数据处理函数
+     *
+     * ```php
+     * function ($data) {
+     *     $data['user_id'] = Yii::$app->user->id;
+     *     return $data;
+     * }
+     * ```
+     */
+    public $processing;
+
 
     /**
      * 运行
@@ -36,7 +48,8 @@ class CreateAction extends Action
     {
         /* @var $model ActiveRecord */
         $model = new $this->modelClass;
-        $model->load(Yii::$app->request->post(), '');
+        $data  = $this->processing ? call_user_func($this->processing, Yii::$app->request->post()) : Yii::$app->request->post();
+        $model->load($data, '');
 
         if ($model->save()) {
             if ($this->isLocation) {
